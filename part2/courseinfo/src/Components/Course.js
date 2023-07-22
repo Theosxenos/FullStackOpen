@@ -1,10 +1,12 @@
 import Header from "./Header";
 import Content from "./Content";
 
-const Course = (props) => {
-    console.log(props);
+const Course = ({course}) => {
+    const {id, name, parts} = course;
+    
     return <>
-        <Header />
+        <Header text={name} />
+        <Content parts={parts} />
     </>
 }
 
