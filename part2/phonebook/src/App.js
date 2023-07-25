@@ -3,12 +3,14 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import personsService from "./services/personsService"
+import Notification from "./components/Notification";
 
 const App = () => {
     const [persons, setPersons] = useState([]);
     const [newName, setNewName] = useState('');
     const [newNumber, setNewNumber] = useState('');
     const [filter, setFilter] = useState('');
+    const [notificationMessage, setNotificationMessage] = useState('');
 
     const filteredPersons =
         (persons && filter) ?
@@ -37,6 +39,7 @@ const App = () => {
         const newPerson = {name: newName, number: newNumber};
         personsService.addPerson(newPerson).then((returnedPerson) => {
             setPersons([...persons, returnedPerson]);
+            showNotification(`Added ${returnedPerson.name}`);
             setNewName('');
             setNewNumber('');
         });
@@ -49,7 +52,12 @@ const App = () => {
 
         personsService
             .updatePerson(person.id, {...person, number: newNumber})
-            .then((updatedPerson) => setPersons(persons.map((p) => p.id !== updatedPerson.id ? p : updatedPerson)));
+            .then((updatedPerson) => {
+                setPersons(persons.map((p) => p.id !== updatedPerson.id ? p : updatedPerson));
+                showNotification(`updated ${updatedPerson.name}`);
+                setNewName('');
+                setNewNumber('');
+            });
     }
     
     const handleDeletePerson = (person) => {
@@ -70,10 +78,16 @@ const App = () => {
             });
     }
     
+    const showNotification = (message) => {
+        setNotificationMessage(message);
+        setTimeout(() => setNotificationMessage(''), 5_000);
+    }
+    
 
     return (
         <div>
             <h2>Phonebook</h2>
+            <Notification message={notificationMessage} />
             <Filter handleFilter={setFilter} filter={filter} />
             <h2>add a new</h2>
             <PersonForm handleAddPerson={handleAddPerson} handleNewName={setNewName} handleNewNumber={setNewNumber} newName={newName} newNumber={newNumber}/>
