@@ -19,7 +19,7 @@ const App = () => {
         <label htmlFor=''>find countries</label> <input id='country-input' value={country}
                                                         onChange={(e) => setCountry(e.target.value)}/>
         {filteredCountries.length === 1 && <CountryView country={filteredCountries[0]}/>}
-        {filteredCountries.length > 1 && filteredCountries.length < 11 && <CountryList countries={filteredCountries}/>}
+        {filteredCountries.length > 1 && filteredCountries.length < 11 && <CountryList countries={filteredCountries} onShowClick={setCountry} />}
         {filteredCountries.length > 10 && <div>Too many matches, specify another filter</div>}
     </div>
 };
