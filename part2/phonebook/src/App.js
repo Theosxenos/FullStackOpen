@@ -4,13 +4,14 @@ import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import personsService from "./services/personsService"
 import Notification from "./components/Notification";
+import {NOTIFICATION_TYPES} from "./constants";
 
 const App = () => {
     const [persons, setPersons] = useState([]);
     const [newName, setNewName] = useState('');
     const [newNumber, setNewNumber] = useState('');
     const [filter, setFilter] = useState('');
-    const [notificationMessage, setNotificationMessage] = useState('');
+    const [notificationModel, setNotificationModel] = useState({});
 
     const filteredPersons =
         (persons && filter) ?
@@ -19,9 +20,11 @@ const App = () => {
             persons;
     
     useEffect(() => {
-        personsService.getAll().then((persons) => setPersons(persons));
+        (async () => {
+            setPersons(await personsService.getAll());
+        })();
     }, []);
-    
+
     const handleAddPerson = (event) => {
         event.preventDefault();
 
@@ -39,7 +42,7 @@ const App = () => {
         const newPerson = {name: newName, number: newNumber};
         personsService.addPerson(newPerson).then((returnedPerson) => {
             setPersons([...persons, returnedPerson]);
-            showNotification(`Added ${returnedPerson.name}`);
+            showNotification({ message: `Added ${returnedPerson.name}`, type: NOTIFICATION_TYPES.SUCCESS});
             setNewName('');
             setNewNumber('');
         });
@@ -54,7 +57,7 @@ const App = () => {
             .updatePerson(person.id, {...person, number: newNumber})
             .then((updatedPerson) => {
                 setPersons(persons.map((p) => p.id !== updatedPerson.id ? p : updatedPerson));
-                showNotification(`updated ${updatedPerson.name}`);
+                showNotification({ message: `updated ${updatedPerson.name}`, type: NOTIFICATION_TYPES.SUCCESS})
                 setNewName('');
                 setNewNumber('');
             });
@@ -72,22 +75,22 @@ const App = () => {
                 const newPersonsArray = persons.filter(p => p.id !== person.id);
                 setPersons(newPersonsArray);
             })
-            .catch(error => {
-                // handle error
-                console.error(error);
+            .catch( async (error) => {
+                setPersons(await personsService.getAll());
+                console.error(error.message);
+                showNotification({message: `Information of ${person.name} has already been removed from the server`, type: NOTIFICATION_TYPES.DANGER});
             });
     }
     
-    const showNotification = (message) => {
-        setNotificationMessage(message);
-        setTimeout(() => setNotificationMessage(''), 5_000);
+    const showNotification = (notificationModel) => {
+        setNotificationModel(notificationModel);
+        setTimeout(() => setNotificationModel({}), 5_000);
     }
     
-
     return (
         <div>
             <h2>Phonebook</h2>
-            <Notification message={notificationMessage} />
+            <Notification notificationModel={notificationModel} />
             <Filter handleFilter={setFilter} filter={filter} />
             <h2>add a new</h2>
             <PersonForm handleAddPerson={handleAddPerson} handleNewName={setNewName} handleNewNumber={setNewNumber} newName={newName} newNumber={newNumber}/>
