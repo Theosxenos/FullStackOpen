@@ -74,9 +74,10 @@ const App = () => {
             .then((result) => {
                 const newPersonsArray = persons.filter(p => p.id !== person.id);
                 setPersons(newPersonsArray);
+                showNotification({message: `Person ${person.name} is successfully removed from the server`, type: NOTIFICATION_TYPES.SUCCESS});
             })
-            .catch( async (error) => {
-                setPersons(await personsService.getAll());
+            .catch((error) => {
+                personsService.getAll().then((persons) => setPersons(persons));
                 console.error(error.message);
                 showNotification({message: `Information of ${person.name} has already been removed from the server`, type: NOTIFICATION_TYPES.DANGER});
             });
