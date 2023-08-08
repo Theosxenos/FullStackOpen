@@ -1,7 +1,7 @@
-export const  NOTIFICATION_TYPES = {
+const NOTIFICATION_TYPES = {
     SUCCESS: 'success',
     DANGER: 'danger',
-    INFO: 'info'
-}
+    INFO: 'info',
+};
 
-
+export default NOTIFICATION_TYPES;
