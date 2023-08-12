@@ -3,7 +3,7 @@ import { agent as supertest } from 'supertest';
 // eslint-disable-next-line import/extensions
 import app from '../app.js';
 // eslint-disable-next-line import/extensions
-import listWithMultipleBlogs from './apiTest_helper.js';
+import { listWithMultipleBlogs, singleBlog } from './apiTest_helper.js';
 // eslint-disable-next-line import/extensions
 import blogRepository from '../repositories/BlogRepository.js';
 
@@ -16,17 +16,10 @@ beforeEach(async () => {
 
 describe('api tests', () => {
     test('blogs are returned as json with correct amount', async () => {
-        const response = await api.get('/api/blogs');
+        const response = await api.get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/);
 
-        // Check the response status
-        expect(response.status)
-            .toBe(200);
-
-        // Check the content-type of the response
-        expect(response.headers['content-type'])
-            .toMatch(/application\/json/);
-
-        // Check the length of the response body
         expect(response.body.length)
             .toBe(listWithMultipleBlogs.length);
     });
@@ -41,6 +34,26 @@ describe('api tests', () => {
             expect(blog._id)
                 .toBeFalsy();
         });
+    });
+
+    test('test new blog creation', async () => {
+        const response = await api.post('/api/blogs')
+            .send(singleBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/);
+
+        const newBlogId = response.body.insertedId;
+        const allBlogs = await api.get('/api/blogs');
+
+        expect(allBlogs.body.length === listWithMultipleBlogs.length + 1);
+
+        const foundBlog = allBlogs.body.find((blog) => blog.id === newBlogId);
+
+        expect(foundBlog)
+            .toEqual({
+                ...singleBlog,
+                id: newBlogId,
+            });
     });
 });
 

@@ -16,6 +16,7 @@ blogsRouter.get('/', async (request, response, next) => {
     try {
         response.json(await blogRepository.getAllBlogs());
     } catch (e) {
+        logger.error(e);
         next(e);
     }
 });
@@ -23,11 +24,11 @@ blogsRouter.get('/', async (request, response, next) => {
 blogsRouter.post('/', async (request, response) => {
     try {
         const result = await blogRepository.addNewBlog(request.body);
-        console.log(result);
+
         response.status(201)
-            .send();
+            .json(result);
     } catch (e) {
-        console.error(e);
+        logger.error(e);
         response.status(400)
             .send({ error: e.message });
     }

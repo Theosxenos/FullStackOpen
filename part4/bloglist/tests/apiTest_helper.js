@@ -37,4 +37,11 @@ const listWithMultipleBlogs = [
     },
 ];
 
-export default listWithMultipleBlogs;
+const singleBlog = {
+    title: 'Lorem Ipsum',
+    author: 'Cicero',
+    url: 'https://example.com',
+    likes: 13,
+};
+
+export { listWithMultipleBlogs, singleBlog };
