@@ -1,4 +1,4 @@
-import { agent as Supertest } from 'supertest';
+import { agent as supertest } from 'supertest';
 // import Supertest from 'supertest';
 // eslint-disable-next-line import/extensions
 import app from '../app.js';
@@ -7,7 +7,7 @@ import listWithMultipleBlogs from './apiTest_helper.js';
 // eslint-disable-next-line import/extensions
 import blogRepository from '../repositories/BlogRepository.js';
 
-const api = new Supertest(app);
+const api = supertest(app);
 
 beforeEach(async () => {
     await blogRepository.collection.deleteMany({});
@@ -29,6 +29,18 @@ describe('api tests', () => {
         // Check the length of the response body
         expect(response.body.length)
             .toBe(listWithMultipleBlogs.length);
+    });
+
+    test('veryify id property name', async () => {
+        const { body } = await api.get('/api/blogs');
+
+        body.forEach((blog) => {
+            expect(blog.id)
+                .toBeDefined();
+            // eslint-disable-next-line no-underscore-dangle
+            expect(blog._id)
+                .toBeFalsy();
+        });
     });
 });
 
