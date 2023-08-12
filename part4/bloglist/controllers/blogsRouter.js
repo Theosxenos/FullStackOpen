@@ -1,6 +1,6 @@
 import { Router } from 'express';
 // eslint-disable-next-line import/extensions
-import blogRepository from '../repositories/BlogRepository.js';
+import blogRepository from '../repositories/BlogRepositorySingleton.js';
 // eslint-disable-next-line import/extensions
 import logger from '../utils/Logger.js';
 
@@ -8,30 +8,31 @@ try {
     await blogRepository.connect();
 } catch (error) {
     logger.error(error);
+    throw (error);
 }
 
 const blogsRouter = new Router();
 
-blogsRouter.get('/', async (request, response, next) => {
-    try {
-        response.json(await blogRepository.getAllBlogs());
-    } catch (e) {
-        logger.error(e);
-        next(e);
-    }
+blogsRouter.get('/', async (request, response) => {
+    response.json(await blogRepository.getAllBlogs());
 });
 
 blogsRouter.post('/', async (request, response) => {
-    try {
-        const result = await blogRepository.addNewBlog(request.body);
+    const result = await blogRepository.addNewBlog(request.body);
+    response.status(201)
+        .json(result);
+});
 
-        response.status(201)
-            .json(result);
-    } catch (e) {
-        logger.error(e);
-        response.status(400)
-            .send({ error: e.message });
+blogsRouter.delete('/:id', async (request, response) => {
+    const id = request.params.id.toString();
+    const result = await blogRepository.deleteBlogById(id);
+
+    if (result < 1) {
+        throw new Error('blog not found');
     }
+
+    response.status(204)
+        .end();
 });
 
 export default blogsRouter;

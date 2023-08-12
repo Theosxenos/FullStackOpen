@@ -1,3 +1,5 @@
+import blogRepository from '../repositories/BlogRepositorySingleton.js';
+
 const listWithMultipleBlogs = [
     {
         title: 'React patterns',
@@ -35,6 +37,12 @@ const listWithMultipleBlogs = [
         url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
         likes: 2,
     },
+    {
+        title: 'Lorem Ipsum',
+        author: 'Augustinus',
+        url: 'https://example.com',
+        likes: 13,
+    },
 ];
 
 const singleBlog = {
@@ -67,6 +75,8 @@ const singleBlogNoUrlTitle = {
     likes: 13,
 };
 
+const getBlogsFromDb = () => blogRepository.getAllBlogs();
+
 export {
     listWithMultipleBlogs,
     singleBlog,
@@ -74,4 +84,5 @@ export {
     singleBlogNoTitle,
     singleBlogNoUrl,
     singleBlogNoUrlTitle,
+    getBlogsFromDb,
 };

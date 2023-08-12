@@ -1,9 +1,10 @@
 import express from 'express';
 import cors from 'cors';
+import 'express-async-errors';
 // eslint-disable-next-line import/extensions
 import blogsRouter from './controllers/blogsRouter.js';
 // eslint-disable-next-line import/extensions
-import Logger from './utils/Logger.js';
+import logger from './utils/Logger.js';
 
 const app = express();
 
@@ -19,7 +20,19 @@ app.use((request, response) => {
 });
 
 app.use((error, request, response, next) => {
-    Logger.error(error);
+    logger.error(error);
+
+    if (error.message === 'properties missing') {
+        response.status(400)
+            .send({ error: error.message });
+    }
+    if (error.message === 'blog not found') {
+        response.status(404)
+            .send({ error: error.message });
+    }
+
+    response.status(500)
+        .send({ error: 'uknown server error' });
 });
 
 export default app;

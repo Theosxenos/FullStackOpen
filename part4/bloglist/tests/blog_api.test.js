@@ -9,10 +9,11 @@ import {
     singleBlogNoTitle,
     singleBlogNoUrl,
     singleBlogNoUrlTitle,
+    getBlogsFromDb,
 // eslint-disable-next-line import/extensions
 } from './apiTest_helper.js';
 // eslint-disable-next-line import/extensions
-import blogRepository from '../repositories/BlogRepository.js';
+import blogRepository from '../repositories/BlogRepositorySingleton.js';
 
 const api = supertest(app);
 
@@ -21,7 +22,7 @@ beforeEach(async () => {
     await blogRepository.collection.insertMany(listWithMultipleBlogs);
 });
 
-describe('api tests', () => {
+describe('test saved blogs', () => {
     test('blogs are returned as json with correct amount', async () => {
         const response = await api.get('/api/blogs')
             .expect(200)
@@ -42,7 +43,9 @@ describe('api tests', () => {
                 .toBeFalsy();
         });
     });
+});
 
+describe('test inserting new blogs', () => {
     test('test new blog creation', async () => {
         const response = await api.post('/api/blogs')
             .send(singleBlog)
@@ -50,11 +53,11 @@ describe('api tests', () => {
             .expect('Content-Type', /application\/json/);
 
         const newBlogId = response.body.insertedId;
-        const allBlogs = await api.get('/api/blogs');
+        const allBlogs = await getBlogsFromDb();
 
-        expect(allBlogs.body.length === listWithMultipleBlogs.length + 1);
+        expect(allBlogs.length === listWithMultipleBlogs.length + 1);
 
-        expect(allBlogs.body)
+        expect(allBlogs)
             .toContainEqual({
                 ...singleBlog,
                 id: newBlogId,
@@ -68,11 +71,11 @@ describe('api tests', () => {
             .expect('Content-Type', /application\/json/);
 
         const newBlogId = response.body.insertedId;
-        const allBlogs = await api.get('/api/blogs');
+        const allBlogs = await getBlogsFromDb();
 
-        expect(allBlogs.body.length === listWithMultipleBlogs.length + 1);
+        expect(allBlogs.length === listWithMultipleBlogs.length + 1);
 
-        const foundBlog = allBlogs.body.find((blog) => blog.id === newBlogId);
+        const foundBlog = allBlogs.find((blog) => blog.id === newBlogId);
 
         expect(foundBlog.likes)
             .toBe(0);
@@ -90,6 +93,15 @@ describe('api tests', () => {
             .expect(400));
 
         await Promise.all(promises);
+    });
+});
+
+describe('test saved note manipulation', () => {
+    test('delete a note', async () => {
+        const blogs = await getBlogsFromDb();
+
+        await api.delete(`/api/blogs/${blogs[0].id}`)
+            .expect(204);
     });
 });
 
