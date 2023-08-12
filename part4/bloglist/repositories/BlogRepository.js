@@ -5,50 +5,68 @@ import BlogModel from '../models/BlogModel.js';
 import BlogValidation from '../models/BlogValidation.js';
 // eslint-disable-next-line import/extensions
 import Logger from '../utils/Logger.js';
+// eslint-disable-next-line import/extensions
+import MONGODB_DB from '../utils/config.js';
 
-class BlogRepository {
-    collectionName = 'blogs';
+const BlogRepoSingleton = (() => {
+    let instance;
 
-    dbName = 'blogApp';
+    class BlogRepository {
+        collectionName = 'blogs';
 
-    constructor() {
-        this.initDb();
-    }
+        async #getCollection() {
+            if (!this.collection) {
+                await this.connect();
+            }
 
-    async initDb() {
-        try {
-            this.client = await MongoClient.connect('mongodb://localhost:27017');
-            this.db = this.client.db(this.dbName);
-            this.collection = this.db.collection(this.collectionName, BlogValidation);
-            // this.collection = this.db.createCollection(this.collectionName, BlogValidation);
-            this.db.command({
-                collMod: this.collectionName,
-                validator: BlogValidation.validator,
-            });
-        } catch (error) {
-            Logger.error(error);
+            return this.collection;
+        }
+
+        async connect() {
+            try {
+                this.client = await MongoClient.connect('mongodb://localhost:27017');
+                this.db = this.client.db(MONGODB_DB);
+                this.collection = this.db.collection(this.collectionName);
+
+                this.db.command({
+                    collMod: this.collectionName,
+                    validator: BlogValidation.validator,
+                });
+            } catch (error) {
+                Logger.error(error);
+            }
+        }
+
+        async getAllBlogs() {
+            const blogs = await this.collection.find({})
+                .toArray();
+            return blogs.map((b) => new BlogModel(b));
+        }
+
+        addNewBlog(blog) {
+            return this.collection.insertOne(blog);
+        }
+
+        /**
+         * @param {string} id
+         * @return BlogModel
+         */
+        async getBlogById(id) {
+            const objectId = new ObjectId(id);
+            const blogPost = await this.collection.findOne({ _id: objectId });
+            return new BlogModel(blogPost);
         }
     }
 
-    async getAllBlogs() {
-        const blogs = await this.collection.find({})
-            .toArray();
-        return blogs.map((b) => new BlogModel(b));
-    }
+    return {
+        getInsance: () => {
+            if (!instance) {
+                instance = new BlogRepository();
+            }
 
-    addNewBlog(blog) {
-        return this.collection.insertOne(blog);
-    }
+            return instance;
+        },
+    };
+})();
 
-    /**
-     * @param {string} id
-     * @return BlogModel
-     */
-    async getBlogPostById(id) {
-        const objectId = new ObjectId(id);
-        const blogPost = await this.collection.findOne({ _id: objectId });
-        return new BlogModel(blogPost);
-    }
-}
-
-export default BlogRepository;
+export default BlogRepoSingleton.getInsance();

@@ -1,6 +1,6 @@
-// eslint-disable-next-line import/extensions
 import {
     dummy, favoriteBlog, mostBlogs, mostLikes, totalLikes,
+// eslint-disable-next-line import/extensions
 } from '../utils/list_helper.js';
 
 test('dummy returns one', () => {

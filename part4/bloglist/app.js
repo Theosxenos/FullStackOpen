@@ -18,7 +18,7 @@ app.use((request, response) => {
         .send({ error: 'unknown endpoint' });
 });
 
-app.use((request, response, next, error) => {
+app.use((error, request, response, next) => {
     Logger.error(error);
 });
 

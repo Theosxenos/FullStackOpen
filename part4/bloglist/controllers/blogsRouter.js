@@ -1,8 +1,15 @@
 import { Router } from 'express';
 // eslint-disable-next-line import/extensions
-import BlogRepository from '../repositories/BlogRepository.js';
+import blogRepository from '../repositories/BlogRepository.js';
+// eslint-disable-next-line import/extensions
+import logger from '../utils/Logger.js';
 
-const blogRepository = new BlogRepository();
+try {
+    await blogRepository.connect();
+} catch (error) {
+    logger.error(error);
+}
+
 const blogsRouter = new Router();
 
 blogsRouter.get('/', async (request, response, next) => {
