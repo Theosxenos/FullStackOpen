@@ -2,8 +2,15 @@ import { agent as supertest } from 'supertest';
 // import Supertest from 'supertest';
 // eslint-disable-next-line import/extensions
 import app from '../app.js';
+import {
+    listWithMultipleBlogs,
+    singleBlog,
+    singleBlogNoLikes,
+    singleBlogNoTitle,
+    singleBlogNoUrl,
+    singleBlogNoUrlTitle,
 // eslint-disable-next-line import/extensions
-import { listWithMultipleBlogs, singleBlog, singleBlogNoLikes } from './apiTest_helper.js';
+} from './apiTest_helper.js';
 // eslint-disable-next-line import/extensions
 import blogRepository from '../repositories/BlogRepository.js';
 
@@ -47,10 +54,8 @@ describe('api tests', () => {
 
         expect(allBlogs.body.length === listWithMultipleBlogs.length + 1);
 
-        const foundBlog = allBlogs.body.find((blog) => blog.id === newBlogId);
-
-        expect(foundBlog)
-            .toEqual({
+        expect(allBlogs.body)
+            .toContainEqual({
                 ...singleBlog,
                 id: newBlogId,
             });
@@ -71,6 +76,20 @@ describe('api tests', () => {
 
         expect(foundBlog.likes)
             .toBe(0);
+    });
+
+    test('new blog without title or url', async () => {
+        const missingPropBlogsArr = [
+            singleBlogNoTitle,
+            singleBlogNoUrl,
+            singleBlogNoUrlTitle,
+        ];
+
+        const promises = missingPropBlogsArr.map(async (blog) => api.post('/api/blogs')
+            .send(blog)
+            .expect(400));
+
+        await Promise.all(promises);
     });
 });
 

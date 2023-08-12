@@ -49,6 +49,10 @@ const BlogRepoSingleton = (() => {
                 newBlog.likes = 0;
             }
 
+            if (blog.title === undefined || blog.url === undefined) {
+                throw new Error('Properties missing');
+            }
+
             return this.collection.insertOne(newBlog);
         }
 

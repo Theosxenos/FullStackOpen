@@ -45,9 +45,33 @@ const singleBlog = {
 };
 
 const singleBlogNoLikes = {
-    title: 'Dolor Set Amin',
+    title: 'Dolor sit amet',
     author: 'Cicero',
     url: 'https://example.com',
 };
 
-export { listWithMultipleBlogs, singleBlog, singleBlogNoLikes };
+const singleBlogNoTitle = {
+    author: 'Cicero',
+    url: 'https://example.com',
+    likes: 13,
+};
+
+const singleBlogNoUrl = {
+    title: 'Consectetur adipiscing elit',
+    author: 'Cicero',
+    likes: 13,
+};
+
+const singleBlogNoUrlTitle = {
+    author: 'Cicero',
+    likes: 13,
+};
+
+export {
+    listWithMultipleBlogs,
+    singleBlog,
+    singleBlogNoLikes,
+    singleBlogNoTitle,
+    singleBlogNoUrl,
+    singleBlogNoUrlTitle,
+};
