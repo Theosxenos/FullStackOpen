@@ -44,4 +44,10 @@ const singleBlog = {
     likes: 13,
 };
 
-export { listWithMultipleBlogs, singleBlog };
+const singleBlogNoLikes = {
+    title: 'Dolor Set Amin',
+    author: 'Cicero',
+    url: 'https://example.com',
+};
+
+export { listWithMultipleBlogs, singleBlog, singleBlogNoLikes };

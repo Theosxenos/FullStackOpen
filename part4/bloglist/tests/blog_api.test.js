@@ -3,7 +3,7 @@ import { agent as supertest } from 'supertest';
 // eslint-disable-next-line import/extensions
 import app from '../app.js';
 // eslint-disable-next-line import/extensions
-import { listWithMultipleBlogs, singleBlog } from './apiTest_helper.js';
+import { listWithMultipleBlogs, singleBlog, singleBlogNoLikes } from './apiTest_helper.js';
 // eslint-disable-next-line import/extensions
 import blogRepository from '../repositories/BlogRepository.js';
 
@@ -54,6 +54,23 @@ describe('api tests', () => {
                 ...singleBlog,
                 id: newBlogId,
             });
+    });
+
+    test('new blog without likes', async () => {
+        const response = await api.post('/api/blogs')
+            .send(singleBlogNoLikes)
+            .expect(201)
+            .expect('Content-Type', /application\/json/);
+
+        const newBlogId = response.body.insertedId;
+        const allBlogs = await api.get('/api/blogs');
+
+        expect(allBlogs.body.length === listWithMultipleBlogs.length + 1);
+
+        const foundBlog = allBlogs.body.find((blog) => blog.id === newBlogId);
+
+        expect(foundBlog.likes)
+            .toBe(0);
     });
 });
 

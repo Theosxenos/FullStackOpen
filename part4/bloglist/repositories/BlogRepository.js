@@ -44,7 +44,12 @@ const BlogRepoSingleton = (() => {
         }
 
         addNewBlog(blog) {
-            return this.collection.insertOne(blog);
+            const newBlog = { ...blog };
+            if (blog.likes === undefined) {
+                newBlog.likes = 0;
+            }
+
+            return this.collection.insertOne(newBlog);
         }
 
         /**
