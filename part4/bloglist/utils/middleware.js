@@ -10,7 +10,7 @@ const unknowEndpointHandler = (request, response) => {
 const errorHandler = (error, request, response, next) => {
     logger.error(error);
 
-    if (error.message === 'properties missing') {
+    if (error.name === 'ValidationError') {
         response.status(400)
             .send({ error: error.message });
     }

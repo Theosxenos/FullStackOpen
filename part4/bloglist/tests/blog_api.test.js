@@ -104,6 +104,11 @@ describe('test saved note manipulation', () => {
             .expect(204);
     });
 
+    test('delete a non existing note', async () => {
+        await api.delete('/api/blogs/64d7795c921938dadba1b616')
+            .expect(404);
+    });
+
     test('update a note', async () => {
         let blogs = await getBlogsFromDb();
 

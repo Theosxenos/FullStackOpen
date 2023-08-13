@@ -27,33 +27,18 @@ class BlogRepository {
         return newBlog.save();
     }
 
-    // /**
-    //  * @param {string} id
-    //  * @return BlogModel
-    //  */
-    // async getBlogById(id) {
-    //     const objectId = new ObjectId(id);
-    //     const blogPost = await this.collection.findOne({ _id: objectId });
-    //     return new BlogModel(blogPost);
-    // }
-    //
-    // async deleteBlogById(id) {
-    //     const objectId = new ObjectId(id);
-    //     const result = await this.collection.deleteOne({ _id: objectId });
-    //     return result.deletedCount;
-    // }
-    //
-    // async updateBlogById(id, blog) {
-    //     const objectId = new ObjectId(id);
-    //     const toUpdateBlog = { ...blog };
-    //
-    //     delete toUpdateBlog.id;
-    //     // eslint-disable-next-line no-underscore-dangle
-    //     toUpdateBlog._id = objectId;
-    //
-    //     const result = await this.collection.updateOne({ _id: objectId }, { $set: toUpdateBlog });
-    //     return result.modifiedCount;
-    // }
+    async getBlogById(id) {
+        const blogPost = await BlogModel.findById(id);
+        return new BlogModel(blogPost);
+    }
+
+    async deleteBlogById(id) {
+        return BlogModel.findByIdAndDelete(id);
+    }
+
+    async updateBlogById(id, blog) {
+        return BlogModel.findByIdAndUpdate(id, blog, { new: true });
+    }
 }
 
 export default BlogRepository;

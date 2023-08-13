@@ -30,7 +30,7 @@ blogsRouter.delete('/:id', async (request, response) => {
     const id = request.params.id.toString();
     const result = await blogRepository.deleteBlogById(id);
 
-    if (result < 1) {
+    if (!result) {
         throw new Error('blog not found');
     }
 
@@ -44,7 +44,7 @@ blogsRouter.put('/:id', async (request, response) => {
 
     const result = await blogRepository.updateBlogById(id, blog);
 
-    if (result < 1) {
+    if (!result) {
         throw new Error('blog not found');
     }
 
