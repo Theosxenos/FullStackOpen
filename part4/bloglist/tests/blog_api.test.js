@@ -16,6 +16,8 @@ import {
 } from './apiTest_helper.js';
 // eslint-disable-next-line import/extensions
 import blogRepository from '../repositories/BlogRepositorySingleton.js';
+import BlogModel from '../models/BlogSchema.js';
+import mongoose from 'mongoose';
 
 const api = supertest(app);
 
@@ -57,16 +59,12 @@ describe('test inserting new blogs', () => {
             .expect(201)
             .expect('Content-Type', /application\/json/);
 
-        const newBlogId = response.body.insertedId;
         const allBlogs = await getBlogsFromDb();
 
-        expect(allBlogs.length === listWithMultipleBlogs.length + 1);
-
+        expect(allBlogs.length)
+            .toBe(listWithMultipleBlogs.length + 1);
         expect(allBlogs)
-            .toContainEqual({
-                ...singleBlog,
-                id: newBlogId,
-            });
+            .toContainEqual(response.body);
     });
 
     test('new blog without likes', async () => {
@@ -75,15 +73,12 @@ describe('test inserting new blogs', () => {
             .expect(201)
             .expect('Content-Type', /application\/json/);
 
-        const newBlogId = response.body.insertedId;
-        const allBlogs = await getBlogsFromDb();
-
-        expect(allBlogs.length === listWithMultipleBlogs.length + 1);
-
-        const foundBlog = allBlogs.find((blog) => blog.id === newBlogId);
-
-        expect(foundBlog.likes)
+        expect(response.body.likes)
             .toBe(0);
+
+        const allBlogs = await getBlogsFromDb();
+        expect(allBlogs.length)
+            .toBe(listWithMultipleBlogs.length + 1);
     });
 
     test('new blog without title or url', async () => {
@@ -126,5 +121,6 @@ describe('test saved note manipulation', () => {
 });
 
 afterAll(async () => {
-    await blogRepository.client.close();
+    // TODO abstract
+    await mongoose.connection.close();
 });

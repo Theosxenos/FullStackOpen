@@ -1,5 +1,7 @@
 // eslint-disable-next-line import/extensions
 import blogRepository from '../repositories/BlogRepositorySingleton.js';
+// eslint-disable-next-line import/extensions
+import BlogModel from '../models/BlogSchema.js';
 
 const listWithMultipleBlogs = [
     {
@@ -76,11 +78,14 @@ async function connectDB() {
     }
 }
 
-const getBlogsFromDb = () => blogRepository.getAllBlogs();
+const getBlogsFromDb = async () => {
+    const blogs = await blogRepository.getAllBlogs();
+    return blogs.map((blog) => blog.toJSON());
+};
 
 const initTestData = async () => {
-    await blogRepository.collection.deleteMany({});
-    await blogRepository.collection.insertMany(listWithMultipleBlogs);
+    await BlogModel.deleteMany({});
+    await BlogModel.insertMany(listWithMultipleBlogs);
 };
 
 export {
