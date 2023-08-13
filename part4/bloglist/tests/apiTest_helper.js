@@ -78,6 +78,11 @@ async function connectDB() {
 
 const getBlogsFromDb = () => blogRepository.getAllBlogs();
 
+const initTestData = async () => {
+    await blogRepository.collection.deleteMany({});
+    await blogRepository.collection.insertMany(listWithMultipleBlogs);
+};
+
 export {
     listWithMultipleBlogs,
     singleBlog,
@@ -87,4 +92,5 @@ export {
     singleBlogNoUrlTitle,
     connectDB,
     getBlogsFromDb,
+    initTestData,
 };

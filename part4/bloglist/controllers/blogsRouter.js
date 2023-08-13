@@ -38,4 +38,18 @@ blogsRouter.delete('/:id', async (request, response) => {
         .end();
 });
 
+blogsRouter.put('/:id', async (request, response) => {
+    const id = request.params.id.toString();
+    const blog = request.body;
+
+    const result = await blogRepository.updateBlogById(id, blog);
+
+    if (result < 1) {
+        throw new Error('blog not found');
+    }
+
+    response.status(204)
+        .end();
+});
+
 export default blogsRouter;

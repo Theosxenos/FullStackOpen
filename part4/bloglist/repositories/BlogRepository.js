@@ -56,6 +56,18 @@ class BlogRepository {
         const result = await this.collection.deleteOne({ _id: objectId });
         return result.deletedCount;
     }
+
+    async updateBlogById(id, blog) {
+        const objectId = new ObjectId(id);
+        const toUpdateBlog = { ...blog };
+
+        delete toUpdateBlog.id;
+        // eslint-disable-next-line no-underscore-dangle
+        toUpdateBlog._id = objectId;
+
+        const result = await this.collection.updateOne({ _id: objectId }, { $set: toUpdateBlog });
+        return result.modifiedCount;
+    }
 }
 
 export default BlogRepository;

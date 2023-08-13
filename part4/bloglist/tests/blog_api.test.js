@@ -11,6 +11,7 @@ import {
     singleBlogNoUrlTitle,
     connectDB,
     getBlogsFromDb,
+    initTestData,
 // eslint-disable-next-line import/extensions
 } from './apiTest_helper.js';
 // eslint-disable-next-line import/extensions
@@ -23,8 +24,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-    await blogRepository.collection.deleteMany({});
-    await blogRepository.collection.insertMany(listWithMultipleBlogs);
+    await initTestData();
 });
 
 describe('test saved blogs', () => {
@@ -107,6 +107,21 @@ describe('test saved note manipulation', () => {
 
         await api.delete(`/api/blogs/${blogs[0].id}`)
             .expect(204);
+    });
+
+    test('update a note', async () => {
+        let blogs = await getBlogsFromDb();
+
+        const toUpdateBlog = blogs[0];
+        toUpdateBlog.likes = 420;
+
+        await api.put(`/api/blogs/${toUpdateBlog.id}`)
+            .send(toUpdateBlog)
+            .expect(204);
+
+        blogs = await getBlogsFromDb();
+        expect(blogs)
+            .toContainEqual(toUpdateBlog);
     });
 });
 
