@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/extensions
 import blogRepository from '../repositories/BlogRepositorySingleton.js';
 
 const listWithMultipleBlogs = [
@@ -37,12 +38,6 @@ const listWithMultipleBlogs = [
         url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
         likes: 2,
     },
-    {
-        title: 'Lorem Ipsum',
-        author: 'Augustinus',
-        url: 'https://example.com',
-        likes: 13,
-    },
 ];
 
 const singleBlog = {
@@ -75,6 +70,12 @@ const singleBlogNoUrlTitle = {
     likes: 13,
 };
 
+async function connectDB() {
+    if (!blogRepository.client) {
+        await blogRepository.connect();
+    }
+}
+
 const getBlogsFromDb = () => blogRepository.getAllBlogs();
 
 export {
@@ -84,5 +85,6 @@ export {
     singleBlogNoTitle,
     singleBlogNoUrl,
     singleBlogNoUrlTitle,
+    connectDB,
     getBlogsFromDb,
 };

@@ -9,6 +9,7 @@ import {
     singleBlogNoTitle,
     singleBlogNoUrl,
     singleBlogNoUrlTitle,
+    connectDB,
     getBlogsFromDb,
 // eslint-disable-next-line import/extensions
 } from './apiTest_helper.js';
@@ -16,6 +17,10 @@ import {
 import blogRepository from '../repositories/BlogRepositorySingleton.js';
 
 const api = supertest(app);
+
+beforeAll(async () => {
+    await connectDB();
+});
 
 beforeEach(async () => {
     await blogRepository.collection.deleteMany({});

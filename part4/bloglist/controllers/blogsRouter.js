@@ -1,17 +1,20 @@
 import { Router } from 'express';
 // eslint-disable-next-line import/extensions
 import blogRepository from '../repositories/BlogRepositorySingleton.js';
-// eslint-disable-next-line import/extensions
-import logger from '../utils/Logger.js';
-
-try {
-    await blogRepository.connect();
-} catch (error) {
-    logger.error(error);
-    throw (error);
-}
 
 const blogsRouter = new Router();
+
+blogsRouter.use(async (req, res, next) => {
+    try {
+        if (!blogRepository.client) {
+            await blogRepository.connect();
+        }
+
+        next();
+    } catch (error) {
+        next(new Error('database connection problems'));
+    }
+});
 
 blogsRouter.get('/', async (request, response) => {
     response.json(await blogRepository.getAllBlogs());

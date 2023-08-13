@@ -12,18 +12,14 @@ class BlogRepository {
     collectionName = 'blogs';
 
     async connect() {
-        try {
-            this.client = await MongoClient.connect('mongodb://localhost:27017');
-            this.db = this.client.db(MONGODB_DB);
-            this.collection = this.db.collection(this.collectionName);
+        this.client = await MongoClient.connect('mongodb://localhost:27017');
+        this.db = this.client.db(MONGODB_DB);
+        this.collection = this.db.collection(this.collectionName);
 
-            this.db.command({
-                collMod: this.collectionName,
-                validator: BlogValidation.validator,
-            });
-        } catch (error) {
-            Logger.error(error);
-        }
+        this.db.command({
+            collMod: this.collectionName,
+            validator: BlogValidation.validator,
+        });
     }
 
     async getAllBlogs() {
