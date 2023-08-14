@@ -9,17 +9,12 @@ import {
     singleBlogNoTitle,
     singleBlogNoUrl,
     singleBlogNoUrlTitle,
-    connectDB,
     getBlogsFromDb,
     initTestData,
 // eslint-disable-next-line import/extensions
 } from './apiTest_helper.js';
 
 const api = supertest(app);
-
-beforeAll(async () => {
-    await connectDB();
-});
 
 beforeEach(async () => {
     await initTestData();

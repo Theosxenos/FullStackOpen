@@ -72,12 +72,6 @@ const singleBlogNoUrlTitle = {
     likes: 13,
 };
 
-async function connectDB() {
-    if (!blogRepository.client) {
-        await blogRepository.connect();
-    }
-}
-
 const getBlogsFromDb = async () => {
     const blogs = await blogRepository.getAllBlogs();
     return blogs.map((blog) => blog.toJSON());
@@ -95,7 +89,6 @@ export {
     singleBlogNoTitle,
     singleBlogNoUrl,
     singleBlogNoUrlTitle,
-    connectDB,
     getBlogsFromDb,
     initTestData,
 };
