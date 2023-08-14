@@ -5,7 +5,7 @@ import UserModel from '../models/UserSchema.js';
 
 class UserRepository {
     async getAllUsers() {
-        return UserModel.find({});
+        return UserModel.find({}).populate('blogs', { likes: 0, user: 0 });
     }
 
     async addNewUser(user) {
