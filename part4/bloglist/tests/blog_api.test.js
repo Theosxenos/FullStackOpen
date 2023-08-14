@@ -1,5 +1,5 @@
 import { agent as supertest } from 'supertest';
-// import Supertest from 'supertest';
+import mongoose from 'mongoose';
 // eslint-disable-next-line import/extensions
 import app from '../app.js';
 import {
@@ -9,21 +9,12 @@ import {
     singleBlogNoTitle,
     singleBlogNoUrl,
     singleBlogNoUrlTitle,
-    connectDB,
     getBlogsFromDb,
     initTestData,
 // eslint-disable-next-line import/extensions
-} from './apiTest_helper.js';
-// eslint-disable-next-line import/extensions
-import blogRepository from '../repositories/BlogRepositorySingleton.js';
-import BlogModel from '../models/BlogSchema.js';
-import mongoose from 'mongoose';
+} from './blogApiTest_helper.js';
 
 const api = supertest(app);
-
-beforeAll(async () => {
-    await connectDB();
-});
 
 beforeEach(async () => {
     await initTestData();

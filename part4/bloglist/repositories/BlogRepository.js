@@ -1,19 +1,8 @@
 /* eslint-disable class-methods-use-this */
 // eslint-disable-next-line import/extensions
 import BlogModel from '../models/BlogSchema.js';
-// eslint-disable-next-line import/extensions
-import MONGODB_DB from '../utils/config.js';
-import mongoose from 'mongoose';
 
 class BlogRepository {
-    collectionName = 'blogs';
-
-    async connect() {
-        if (mongoose.connection.closed || mongoose.connection.closed === undefined) {
-            await mongoose.connect(`mongodb://localhost:27017/${MONGODB_DB}`);
-        }
-    }
-
     async getAllBlogs() {
         return BlogModel.find({});
     }

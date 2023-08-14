@@ -4,18 +4,6 @@ import blogRepository from '../repositories/BlogRepositorySingleton.js';
 
 const blogsRouter = new Router();
 
-blogsRouter.use(async (req, res, next) => {
-    try {
-        if (!blogRepository.client) {
-            await blogRepository.connect();
-        }
-
-        next();
-    } catch (error) {
-        next(new Error('database connection problems'));
-    }
-});
-
 blogsRouter.get('/', async (request, response) => {
     response.json(await blogRepository.getAllBlogs());
 });
