@@ -9,6 +9,13 @@ class UserRepository {
     }
 
     async addNewUser(user) {
+        if (!user.password) {
+            throw new Error('password missing');
+        }
+        if (user.password.length < 3) {
+            throw new Error('password too short');
+        }
+
         const {
             username,
             name,

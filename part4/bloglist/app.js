@@ -5,7 +5,11 @@ import mongoose from 'mongoose';
 // eslint-disable-next-line import/extensions
 import blogsRouter from './controllers/blogsRouter.js';
 // eslint-disable-next-line import/extensions
-import { errorHandler, unknowEndpointHandler } from './utils/middleware.js';
+import {
+    errorHandler,
+    mongoServerErrorHandler,
+    unknowEndpointHandler,
+} from './utils/middleware.js';
 // eslint-disable-next-line import/extensions
 import usersRouter from './controllers/usersRouter.js';
 // eslint-disable-next-line import/extensions
@@ -24,6 +28,7 @@ app.use('/api/blogs', blogsRouter);
 app.use('/api/users', usersRouter);
 
 app.use(unknowEndpointHandler);
+app.use(mongoServerErrorHandler);
 app.use(errorHandler);
 
 export default app;

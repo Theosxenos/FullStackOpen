@@ -12,7 +12,7 @@ import {
     getBlogsFromDb,
     initTestData,
 // eslint-disable-next-line import/extensions
-} from './apiTest_helper.js';
+} from './blogApiTest_helper.js';
 
 const api = supertest(app);
 

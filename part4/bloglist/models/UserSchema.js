@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import 'mongoose-unique-validator';
 
 class UserSchema extends mongoose.Schema {
     constructor() {
@@ -6,12 +7,11 @@ class UserSchema extends mongoose.Schema {
             username: {
                 type: String,
                 required: true,
+                minLength: 3,
+                unique: true,
             },
             name: String,
-            passwordHash: {
-                type: String,
-                required: true,
-            },
+            passwordHash: String,
         };
 
         super(blogSchemaDefinition);
