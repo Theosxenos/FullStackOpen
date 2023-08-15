@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/extensions
 import userRepository from '../repositories/UserRepositorySingleton.js';
 import UserModel from '../models/UserSchema.js';
+import bcrypt from 'bcrypt';
 
 const singleUser = {
     username: 'actionhenk',
@@ -43,8 +44,20 @@ const listWithMultipleUsers = [
 
 const initTestData = async () => {
     await UserModel.deleteMany({});
-    await UserModel.insertMany(listWithMultipleUsers);
+
+    const hashedUsers = await Promise.all(listWithMultipleUsers.map(async (user) => {
+        const passwordHash = await bcrypt.hash(user.password, 10);
+        const { username, name } = user;
+        return {
+            username,
+            name,
+            passwordHash,
+        };
+    }));
+
+    await UserModel.insertMany(hashedUsers);
 };
+
 
 const getAllUsersFromDb = async () => {
     const users = await userRepository.getAllUsers();

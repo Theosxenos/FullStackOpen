@@ -1,10 +1,11 @@
 import { Router } from 'express';
 // eslint-disable-next-line import/extensions
 import userRepository from '../repositories/userRepositorySingleton.js';
+import { tokenExtractor, userExtractor } from '../utils/authMiddleware.js';
 
 const usersRouter = new Router();
 
-usersRouter.get('/', async (request, response) => {
+usersRouter.get('/', tokenExtractor, userExtractor, async (request, response) => {
     response.json(await userRepository.getAllUsers());
 });
 

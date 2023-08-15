@@ -1,6 +1,3 @@
-// eslint-disable-next-line import/extensions
-import blogRepository from '../repositories/BlogRepositorySingleton.js';
-// eslint-disable-next-line import/extensions
 import BlogModel from '../models/BlogSchema.js';
 import UserModel from '../models/UserSchema.js';
 
@@ -74,8 +71,12 @@ const singleBlogNoUrlTitle = {
 };
 
 const getBlogsFromDb = async () => {
-    const blogs = await blogRepository.getAllBlogs();
-    return blogs.map((blog) => blog.toJSON());
+    const blogs = await BlogModel.find({});
+    return blogs.map((blog) => {
+        const blogObj = blog.toJSON();
+        blogObj.user = blogObj.user.toString();
+        return blogObj;
+    });
 };
 
 const initTestData = async () => {

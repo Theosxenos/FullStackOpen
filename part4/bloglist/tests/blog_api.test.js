@@ -3,16 +3,17 @@ import mongoose from 'mongoose';
 // eslint-disable-next-line import/extensions
 import app from '../app.js';
 import {
+    getBlogsFromDb,
+    initTestData,
     listWithMultipleBlogs,
     singleBlog,
     singleBlogNoLikes,
     singleBlogNoTitle,
     singleBlogNoUrl,
     singleBlogNoUrlTitle,
-    getBlogsFromDb,
-    initTestData,
-// eslint-disable-next-line import/extensions
 } from './blogApiTest_helper.js';
+import authService from '../services/AuthService.js';
+import { listWithMultipleUsers } from './userApiTest_helper.js';
 
 const api = supertest(app);
 
@@ -44,6 +45,17 @@ describe('test saved blogs', () => {
 });
 
 describe('test inserting new blogs', () => {
+    beforeAll(async () => {
+        const {
+            username,
+            password,
+        } = listWithMultipleUsers[0];
+
+        const auth = await authService.login(username, password);
+
+        api.set('Authorization', `Bearer ${auth.token}`);
+    });
+
     test('test new blog creation', async () => {
         const response = await api.post('/api/blogs')
             .send(singleBlog)

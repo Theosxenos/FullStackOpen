@@ -33,7 +33,7 @@ app.get('/api/blogs/', async (request, response) => {
 });
 app.use('/api/blogs', tokenExtractor, userExtractor, blogsRouter);
 app.use('/api/login', loginRouter);
-app.use('/api/users', tokenExtractor, userExtractor, usersRouter);
+app.use('/api/users', usersRouter);
 
 app.use(unknowEndpointHandler);
 app.use(authErrorHandler);

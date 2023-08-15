@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import mongoose from 'mongoose';
 
 class BlogSchema extends mongoose.Schema {
@@ -29,11 +30,9 @@ class BlogSchema extends mongoose.Schema {
         this.set('toJSON', {
             transform: (document, returnedObject) => {
                 const newObject = { ...returnedObject };
-                // eslint-disable-next-line no-underscore-dangle
+
                 newObject.id = returnedObject._id.toString();
-                // eslint-disable-next-line no-underscore-dangle
                 delete newObject._id;
-                // eslint-disable-next-line no-underscore-dangle
                 delete newObject.__v;
 
                 return newObject;
