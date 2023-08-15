@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import blogsRouter from './controllers/blogsRouter.js';
 // eslint-disable-next-line import/extensions
 import {
+    authErrorHandler,
     errorHandler,
     mongoServerErrorHandler,
     unknowEndpointHandler,
@@ -14,6 +15,7 @@ import {
 import usersRouter from './controllers/usersRouter.js';
 // eslint-disable-next-line import/extensions
 import MONGODB_DB from './utils/config.js';
+import loginRouter from './controllers/loginRouter.js';
 
 const app = express();
 
@@ -25,9 +27,11 @@ if (mongoose.connection.closed || mongoose.connection.closed === undefined) {
 }
 
 app.use('/api/blogs', blogsRouter);
+app.use('/api/login', loginRouter);
 app.use('/api/users', usersRouter);
 
 app.use(unknowEndpointHandler);
+app.use(authErrorHandler);
 app.use(mongoServerErrorHandler);
 app.use(errorHandler);
 
