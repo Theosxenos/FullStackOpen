@@ -42,7 +42,7 @@ const listWithMultipleUsers = [
     },
 ];
 
-const initTestData = async () => {
+const initUserTestData = async () => {
     await UserModel.deleteMany({});
 
     const hashedUsers = await Promise.all(listWithMultipleUsers.map(async (user) => {
@@ -65,5 +65,5 @@ const getAllUsersFromDb = async () => {
 };
 
 export {
-    singleUser, listWithMultipleUsers, initTestData, getAllUsersFromDb,
+    singleUser, listWithMultipleUsers, initUserTestData, getAllUsersFromDb,
 };

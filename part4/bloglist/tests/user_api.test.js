@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import app from '../app.js';
 import {
     getAllUsersFromDb,
-    initTestData,
+    initUserTestData,
     listWithMultipleUsers,
     singleUser,
 } from './userApiTest_helper.js';
@@ -12,7 +12,7 @@ import authService from '../services/AuthService.js';
 const api = supertest(app);
 
 beforeEach(async () => {
-    await initTestData();
+    await initUserTestData();
 });
 
 describe('creating new users', () => {

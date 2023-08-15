@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import app from '../app.js';
 import {
     getBlogsFromDb,
-    initTestData,
+    initBlogTestData,
     listWithMultipleBlogs,
     singleBlog,
     singleBlogNoLikes,
@@ -18,7 +18,7 @@ import { listWithMultipleUsers } from './userApiTest_helper.js';
 const api = supertest(app);
 
 beforeEach(async () => {
-    await initTestData();
+    await initBlogTestData();
 });
 
 describe('test saved blogs', () => {
@@ -45,7 +45,7 @@ describe('test saved blogs', () => {
 });
 
 describe('test inserting new blogs', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
         const {
             username,
             password,

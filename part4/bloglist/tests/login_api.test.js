@@ -1,12 +1,12 @@
 import { agent as supertest } from 'supertest';
 import mongoose from 'mongoose';
 import app from '../app.js';
-import { initTestData, listWithMultipleUsers } from './userApiTest_helper.js';
+import { initUserTestData, listWithMultipleUsers } from './userApiTest_helper.js';
 
 const api = supertest(app);
 
 beforeEach(async () => {
-    await initTestData();
+    await initUserTestData();
 });
 
 describe('testing authentication', () => {
