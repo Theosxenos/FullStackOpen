@@ -1,14 +1,12 @@
 import { Router } from 'express';
 // eslint-disable-next-line import/extensions
 import blogRepository from '../repositories/BlogRepositorySingleton.js';
-import authService from '../services/AuthService.js';
-import userRepository from '../repositories/UserRepositorySingleton.js';
 
 const blogsRouter = new Router();
 
-blogsRouter.get('/', async (request, response) => {
-    response.json(await blogRepository.getAllBlogs());
-});
+// blogsRouter.get('/', async (request, response) => {
+//     response.json(await blogRepository.getAllBlogs());
+// });
 
 blogsRouter.get('/:id', async (req, res) => {
     const blog = await blogRepository.getBlogById(req.params.id.toString());
@@ -22,29 +20,27 @@ blogsRouter.get('/:id', async (req, res) => {
 });
 
 blogsRouter.post('/', async (request, response) => {
-    const decodedToken = authService.decodeToken(request.token);
+    const { user } = request;
 
-    if (!decodedToken.id) {
-        response.status(401)
+    if (!user) {
+        return response.status(401)
             .json({ error: 'token invalid' });
     }
 
-    const user = await userRepository.getUserById(decodedToken.id);
     const newBlog = {
         ...request.body,
-        // eslint-disable-next-line no-underscore-dangle
-        user: user._id,
+        user,
     };
 
     const result = await blogRepository.addNewBlog(newBlog);
-    response.status(201)
+    return response.status(201)
         .json(result);
 });
 
 blogsRouter.delete('/:id', async (request, response) => {
-    const decodedToken = authService.decodeToken(request.token);
+    const { user } = request;
 
-    if (!decodedToken.id) {
+    if (!user) {
         return response.status(401)
             .json({ error: 'token invalid' });
     }
@@ -57,7 +53,7 @@ blogsRouter.delete('/:id', async (request, response) => {
             .send({ error: 'blog not found' });
     }
 
-    if (toDeleteBlog.user.toString() !== decodedToken.id) {
+    if (toDeleteBlog.user.toString() !== user) {
         return response.status(401)
             .send({ error: 'wrong user' });
     }

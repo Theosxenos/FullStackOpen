@@ -7,4 +7,13 @@ const tokenExtractor = (request, response, next) => {
     next();
 };
 
-export default tokenExtractor;
+const userExtractor = (request, response, next) => {
+    // const encodedToken = authService.getToken(request.get('authorization'));
+    const decodedToken = authService.decodeToken(request.token);
+
+    request.user = decodedToken.id;
+
+    next();
+};
+
+export { tokenExtractor, userExtractor };
