@@ -7,12 +7,24 @@ const unknowEndpointHandler = (request, response) => {
 };
 
 const authErrorHandler = (error, request, response, next) => {
+    let authFailed = false;
     if (error.message === 'invalid username or password') {
+        authFailed = true;
+    }
+    if (error.name === 'TokenExpiredError') {
+        authFailed = true;
+    }
+    if (error.name === 'JsonWebTokenError') {
+        response.status(400)
+            .send({ error: error.message });
+    }
+
+    if (authFailed) {
         response.status(401)
             .send({ error: error.message });
     }
 
-    next();
+    next(error);
 };
 
 const mongoServerErrorHandler = (error, request, response, next) => {

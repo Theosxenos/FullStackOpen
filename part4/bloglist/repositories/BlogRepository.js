@@ -9,17 +9,12 @@ class BlogRepository {
     }
 
     async addNewBlog(blog) {
-        const user = await UserModel.findOne({});
-        const userId = blog.userId ? blog.userId : user._id;
-        const newBlog = new BlogModel({
-            ...blog,
-            user: userId,
-        });
+        const newBlog = new BlogModel({ ...blog });
         if (blog.likes === undefined) {
             newBlog.likes = 0;
         }
 
-        const foundUser = await UserModel.findById(userId);
+        const foundUser = await UserModel.findById(blog.user);
         foundUser.blogs = [...foundUser.blogs, newBlog._id];
         await foundUser.save();
 
@@ -27,8 +22,7 @@ class BlogRepository {
     }
 
     async getBlogById(id) {
-        const blogPost = await BlogModel.findById(id);
-        return new BlogModel(blogPost);
+        return BlogModel.findById(id);
     }
 
     async deleteBlogById(id) {

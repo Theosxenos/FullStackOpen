@@ -17,13 +17,25 @@ class AuthService {
             id: user._id,
         };
 
-        const token = jwt.sign(userForToken, process.env.SECRET);
+        const token = jwt.sign(userForToken, process.env.SECRET, { expiresIn: 60 * 60 });
 
         return {
             token,
             username: user.username,
             name: user.name,
         };
+    }
+
+    static getToken(authorization) {
+        if (!(authorization && authorization.startsWith('Bearer '))) {
+            return null;
+        }
+
+        return authorization.replace('Bearer ', '');
+    }
+
+    static decodeToken(encodedToken) {
+        return jwt.verify(encodedToken, process.env.SECRET);
     }
 }
 

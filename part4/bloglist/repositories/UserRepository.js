@@ -39,9 +39,9 @@ class UserRepository {
         return UserModel.findOne(searchTerms);
     }
 
-    // async getUserById(id) {
-    //     return UserModel.findById(id);
-    // }
+    async getUserById(id) {
+        return UserModel.findById(id);
+    }
 
     // async deleteUserById(id) {
     //     return UserModel.findByIdAndDelete(id);
