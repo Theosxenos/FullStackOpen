@@ -11,8 +11,7 @@ blogsRouter.get('/', async (request, response) => {
 });
 
 blogsRouter.post('/', async (request, response) => {
-    const requestToken = authService.getToken(request.get('authorization'));
-    const decodedToken = authService.decodeToken(requestToken);
+    const decodedToken = authService.decodeToken(request.token);
 
     if (!decodedToken.id) {
         response.status(401)

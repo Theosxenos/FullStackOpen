@@ -10,12 +10,13 @@ import {
     errorHandler,
     mongoServerErrorHandler,
     unknowEndpointHandler,
-} from './utils/middleware.js';
+} from './utils/errorMiddleware.js';
 // eslint-disable-next-line import/extensions
 import usersRouter from './controllers/usersRouter.js';
 // eslint-disable-next-line import/extensions
 import MONGODB_DB from './utils/config.js';
 import loginRouter from './controllers/loginRouter.js';
+import tokenExtractor from './utils/authMiddleware.js';
 
 const app = express();
 
@@ -25,6 +26,8 @@ app.use(cors());
 if (mongoose.connection.closed || mongoose.connection.closed === undefined) {
     await mongoose.connect(`mongodb://localhost:27017/${MONGODB_DB}`);
 }
+
+app.use(tokenExtractor);
 
 app.use('/api/blogs', blogsRouter);
 app.use('/api/login', loginRouter);
