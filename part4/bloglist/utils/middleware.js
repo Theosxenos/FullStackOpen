@@ -6,17 +6,41 @@ const unknowEndpointHandler = (request, response) => {
         .send({ error: 'unknown endpoint' });
 };
 
-const mongoServerErrorHandler = (error, request, response, next) => {
-    logger.error(error);
-
-    if (error.name !== 'MongoServerError') {
-        next(error);
+const authErrorHandler = (error, request, response, next) => {
+    let authFailed = false;
+    if (error.message === 'invalid username or password') {
+        authFailed = true;
     }
+    if (error.name === 'TokenExpiredError') {
+        authFailed = true;
+    }
+    if (error.name === 'JsonWebTokenError') {
+        response.status(400)
+            .send({ error: error.message });
+    }
+
+    if (authFailed) {
+        response.status(401)
+            .send({ error: error.message });
+    }
+
+    next(error);
+};
+
+const mongoServerErrorHandler = (error, request, response, next) => {
+    if (error.name !== 'MongoServerError') {
+        return next(error);
+    }
+
+    logger.error(error);
 
     if (error.code === 11000) {
         response.status(409)
             .send({ error: error.message });
     }
+
+    return response.status(500)
+        .send({ error: 'uknown MongoServer error' });
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -48,4 +72,6 @@ const errorHandler = (error, request, response, next) => {
         .send({ error: 'uknown server error' });
 };
 
-export { errorHandler, unknowEndpointHandler, mongoServerErrorHandler };
+export {
+    errorHandler, unknowEndpointHandler, mongoServerErrorHandler, authErrorHandler,
+};

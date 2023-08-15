@@ -1,10 +1,11 @@
-/* eslint-disable class-methods-use-this */
-// eslint-disable-next-line import/extensions
+/* eslint-disable class-methods-use-this,no-underscore-dangle */
 import BlogModel from '../models/BlogSchema.js';
+import UserModel from '../models/UserSchema.js';
 
 class BlogRepository {
     async getAllBlogs() {
-        return BlogModel.find({});
+        return BlogModel.find({})
+            .populate('user', { blogs: 0 });
     }
 
     async addNewBlog(blog) {
@@ -13,12 +14,15 @@ class BlogRepository {
             newBlog.likes = 0;
         }
 
+        const foundUser = await UserModel.findById(blog.user);
+        foundUser.blogs = [...foundUser.blogs, newBlog._id];
+        await foundUser.save();
+
         return newBlog.save();
     }
 
     async getBlogById(id) {
-        const blogPost = await BlogModel.findById(id);
-        return new BlogModel(blogPost);
+        return BlogModel.findById(id);
     }
 
     async deleteBlogById(id) {

@@ -1,6 +1,8 @@
 import { Router } from 'express';
 // eslint-disable-next-line import/extensions
 import blogRepository from '../repositories/BlogRepositorySingleton.js';
+import authService from '../services/AuthService.js';
+import userRepository from '../repositories/UserRepositorySingleton.js';
 
 const blogsRouter = new Router();
 
@@ -9,7 +11,22 @@ blogsRouter.get('/', async (request, response) => {
 });
 
 blogsRouter.post('/', async (request, response) => {
-    const result = await blogRepository.addNewBlog(request.body);
+    const requestToken = authService.getToken(request.get('authorization'));
+    const decodedToken = authService.decodeToken(requestToken);
+
+    if (!decodedToken.id) {
+        response.status(401)
+            .json({ error: 'token invalid' });
+    }
+
+    const user = await userRepository.getUserById(decodedToken.id);
+    const newBlog = {
+        ...request.body,
+        // eslint-disable-next-line no-underscore-dangle
+        user: user._id,
+    };
+
+    const result = await blogRepository.addNewBlog(newBlog);
     response.status(201)
         .json(result);
 });

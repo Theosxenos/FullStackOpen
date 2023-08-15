@@ -2,6 +2,7 @@
 import blogRepository from '../repositories/BlogRepositorySingleton.js';
 // eslint-disable-next-line import/extensions
 import BlogModel from '../models/BlogSchema.js';
+import UserModel from '../models/UserSchema.js';
 
 const listWithMultipleBlogs = [
     {
@@ -79,7 +80,16 @@ const getBlogsFromDb = async () => {
 
 const initTestData = async () => {
     await BlogModel.deleteMany({});
-    await BlogModel.insertMany(listWithMultipleBlogs);
+
+    const singleUser = await UserModel.findOne({});
+    const userId = singleUser.toJSON().id;
+
+    await BlogModel.insertMany(listWithMultipleBlogs.map((blog) => {
+        return {
+            ...blog,
+            user: userId,
+        };
+    }));
 };
 
 export {

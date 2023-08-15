@@ -5,9 +5,14 @@ import UserModel from '../models/UserSchema.js';
 
 class UserRepository {
     async getAllUsers() {
-        return UserModel.find({});
+        return UserModel.find({})
+            .populate('blogs', {
+                likes: 0,
+                user: 0,
+            });
     }
 
+    // TODO abstract partially to AuthService
     async addNewUser(user) {
         if (!user.password) {
             throw new Error('password missing');
@@ -30,11 +35,14 @@ class UserRepository {
         return newUser.save();
     }
 
-    // async getUserById(id) {
-    //     const userPost = await UserModel.findById(id);
-    //     return new UserModel(userPost);
-    // }
-    //
+    async findUser(searchTerms) {
+        return UserModel.findOne(searchTerms);
+    }
+
+    async getUserById(id) {
+        return UserModel.findById(id);
+    }
+
     // async deleteUserById(id) {
     //     return UserModel.findByIdAndDelete(id);
     // }

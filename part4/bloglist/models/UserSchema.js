@@ -12,6 +12,12 @@ class UserSchema extends mongoose.Schema {
             },
             name: String,
             passwordHash: String,
+            blogs: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'Blog',
+                },
+            ],
         };
 
         super(blogSchemaDefinition);
