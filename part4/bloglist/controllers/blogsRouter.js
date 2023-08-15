@@ -10,6 +10,17 @@ blogsRouter.get('/', async (request, response) => {
     response.json(await blogRepository.getAllBlogs());
 });
 
+blogsRouter.get('/:id', async (req, res) => {
+    const blog = await blogRepository.getBlogById(req.params.id.toString());
+    if (!blog) {
+        res.status(404)
+            .send({ error: 'blog not found' });
+    }
+
+    res.status(200)
+        .send(blog);
+});
+
 blogsRouter.post('/', async (request, response) => {
     const decodedToken = authService.decodeToken(request.token);
 
@@ -31,14 +42,29 @@ blogsRouter.post('/', async (request, response) => {
 });
 
 blogsRouter.delete('/:id', async (request, response) => {
-    const id = request.params.id.toString();
-    const result = await blogRepository.deleteBlogById(id);
+    const decodedToken = authService.decodeToken(request.token);
 
-    if (!result) {
-        throw new Error('blog not found');
+    if (!decodedToken.id) {
+        return response.status(401)
+            .json({ error: 'token invalid' });
     }
 
-    response.status(204)
+    const id = request.params.id.toString();
+    const toDeleteBlog = await blogRepository.getBlogById(id);
+
+    if (!toDeleteBlog) {
+        return response.status(404)
+            .send({ error: 'blog not found' });
+    }
+
+    if (toDeleteBlog.user.toString() !== decodedToken.id) {
+        return response.status(401)
+            .send({ error: 'wrong user' });
+    }
+
+    await blogRepository.deleteBlogById(id);
+
+    return response.status(204)
         .end();
 });
 
@@ -49,7 +75,8 @@ blogsRouter.put('/:id', async (request, response) => {
     const result = await blogRepository.updateBlogById(id, blog);
 
     if (!result) {
-        throw new Error('blog not found');
+        return response.status(404)
+            .send({ error: 'blog not found' });
     }
 
     response.status(204)
