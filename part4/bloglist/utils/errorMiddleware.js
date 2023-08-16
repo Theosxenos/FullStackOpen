@@ -15,7 +15,7 @@ const authErrorHandler = (error, request, response, next) => {
 
     if (error.name === 'JsonWebTokenError') {
         logger.error(error);
-        return response.status(400)
+        return response.status(401)
             .send({ error: error.message });
     }
 

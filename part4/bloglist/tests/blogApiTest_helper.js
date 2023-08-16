@@ -81,6 +81,8 @@ const getBlogsFromDb = async () => {
     });
 };
 
+const getSingleBlogFromDb = async () => BlogModel.findOne({});
+
 const initBlogTestData = async () => {
     await initUserTestData();
     await BlogModel.deleteMany({});
@@ -107,5 +109,6 @@ export {
     singleBlogNoUrl,
     singleBlogNoUrlTitle,
     getBlogsFromDb,
+    getSingleBlogFromDb,
     initBlogTestData,
 };

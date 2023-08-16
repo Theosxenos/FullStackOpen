@@ -58,7 +58,6 @@ const initUserTestData = async () => {
     await UserModel.insertMany(hashedUsers);
 };
 
-
 const getAllUsersFromDb = async () => {
     const users = await userRepository.getAllUsers();
     return users.map((u) => u.toJSON());

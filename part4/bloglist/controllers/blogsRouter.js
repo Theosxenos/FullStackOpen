@@ -4,10 +4,6 @@ import blogRepository from '../repositories/BlogRepositorySingleton.js';
 
 const blogsRouter = new Router();
 
-// blogsRouter.get('/', async (request, response) => {
-//     response.json(await blogRepository.getAllBlogs());
-// });
-
 blogsRouter.get('/:id', async (req, res) => {
     const blog = await blogRepository.getBlogById(req.params.id.toString());
     if (!blog) {

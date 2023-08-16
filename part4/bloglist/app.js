@@ -1,4 +1,5 @@
 import express from 'express';
+import morgan from 'morgan';
 import cors from 'cors';
 import 'express-async-errors';
 import mongoose from 'mongoose';
@@ -23,6 +24,10 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+morgan.token('req-body', (req) => JSON.stringify(req.body));
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-body'));
+// app.use(morgan('tiny'));
 
 if (mongoose.connection.closed || mongoose.connection.closed === undefined) {
     await mongoose.connect(`mongodb://localhost:27017/${MONGODB_DB}`);
