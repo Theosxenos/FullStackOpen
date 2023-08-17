@@ -1,4 +1,4 @@
-const Login = ({onFormSubmit}) => (
+const LoginForm = ({onFormSubmit}) => (
     <div>
         <h2>log in to application</h2>
         <form onSubmit={onFormSubmit}>
@@ -8,3 +8,5 @@ const Login = ({onFormSubmit}) => (
         </form>
     </div>
 )
+
+export default LoginForm;
