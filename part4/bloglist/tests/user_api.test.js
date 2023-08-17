@@ -3,15 +3,16 @@ import mongoose from 'mongoose';
 import app from '../app.js';
 import {
     getAllUsersFromDb,
-    initTestData,
+    initUserTestData,
     listWithMultipleUsers,
     singleUser,
 } from './userApiTest_helper.js';
+import authService from '../services/AuthService.js';
 
 const api = supertest(app);
 
 beforeEach(async () => {
-    await initTestData();
+    await initUserTestData();
 });
 
 describe('creating new users', () => {
@@ -103,7 +104,14 @@ describe('testing password', () => {
 
 describe('testing existing data', () => {
     test('get all users', async () => {
+        const {
+            username,
+            password,
+        } = listWithMultipleUsers[0];
+        const auth = await authService.login(username, password);
+
         const response = await api.get('/api/users')
+            .set('Authorization', `Bearer ${auth.token}`) // Setting the token as a Bearer token
             .expect(200)
             .expect('Content-Type', /application\/json/);
 

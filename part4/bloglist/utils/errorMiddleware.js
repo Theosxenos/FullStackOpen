@@ -7,24 +7,19 @@ const unknowEndpointHandler = (request, response) => {
 };
 
 const authErrorHandler = (error, request, response, next) => {
-    let authFailed = false;
-    if (error.message === 'invalid username or password') {
-        authFailed = true;
+    if (error.message === 'invalid username or password' || error.name === 'TokenExpiredError') {
+        logger.error(error);
+        return response.status(401)
+            .send({ error: error.message });
     }
-    if (error.name === 'TokenExpiredError') {
-        authFailed = true;
-    }
+
     if (error.name === 'JsonWebTokenError') {
-        response.status(400)
+        logger.error(error);
+        return response.status(401)
             .send({ error: error.message });
     }
 
-    if (authFailed) {
-        response.status(401)
-            .send({ error: error.message });
-    }
-
-    next(error);
+    return next(error);
 };
 
 const mongoServerErrorHandler = (error, request, response, next) => {
@@ -35,7 +30,7 @@ const mongoServerErrorHandler = (error, request, response, next) => {
     logger.error(error);
 
     if (error.code === 11000) {
-        response.status(409)
+        return response.status(409)
             .send({ error: error.message });
     }
 
@@ -48,27 +43,27 @@ const errorHandler = (error, request, response, next) => {
     logger.error(error);
 
     if (error.name === 'ValidationError') {
-        response.status(400)
+        return response.status(400)
             .send({ error: error.message });
     }
     if (error.message === 'password missing') {
-        response.status(400)
+        return response.status(400)
             .send({ error: error.message });
     }
     if (error.message === 'password too short') {
-        response.status(409)
+        return response.status(409)
             .send({ error: error.message });
     }
-    if (error.message === 'blog not found') {
-        response.status(404)
-            .send({ error: error.message });
-    }
+    // if (error.message === 'blog not found') {
+    //     return response.status(404)
+    //         .send({ error: error.message });
+    // }
     if (error.message === 'database connection problems') {
-        response.status(503)
+        return response.status(503)
             .send({ error: error.message });
     }
 
-    response.status(500)
+    return response.status(500)
         .send({ error: 'uknown server error' });
 };
 

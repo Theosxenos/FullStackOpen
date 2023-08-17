@@ -3,21 +3,21 @@ import mongoose from 'mongoose';
 // eslint-disable-next-line import/extensions
 import app from '../app.js';
 import {
+    getBlogsFromDb, getSingleBlogFromDb,
+    initBlogTestData,
     listWithMultipleBlogs,
     singleBlog,
     singleBlogNoLikes,
     singleBlogNoTitle,
     singleBlogNoUrl,
     singleBlogNoUrlTitle,
-    getBlogsFromDb,
-    initTestData,
-// eslint-disable-next-line import/extensions
 } from './blogApiTest_helper.js';
+import { authenticateTestUser, authenticateTestUserById } from './authApiTest_helper.js';
 
 const api = supertest(app);
 
 beforeEach(async () => {
-    await initTestData();
+    await initBlogTestData();
 });
 
 describe('test saved blogs', () => {
@@ -44,6 +44,10 @@ describe('test saved blogs', () => {
 });
 
 describe('test inserting new blogs', () => {
+    beforeEach(async () => {
+        api.set(await authenticateTestUser());
+    });
+
     test('test new blog creation', async () => {
         const response = await api.post('/api/blogs')
             .send(singleBlog)
@@ -79,24 +83,32 @@ describe('test inserting new blogs', () => {
             singleBlogNoUrlTitle,
         ];
 
-        const promises = missingPropBlogsArr.map(async (blog) => api.post('/api/blogs')
-            .send(blog)
-            .expect(400));
+        await missingPropBlogsArr.reduce(async (prevPromise, blog) => {
+            await prevPromise; // wait for the previous promise to resolve
 
-        await Promise.all(promises);
+            return api.post('/api/blogs')
+                .send(blog)
+                .expect(400);
+        }, Promise.resolve()); // start with a resolved promise
     });
 });
 
 describe('test saved note manipulation', () => {
     test('delete a note', async () => {
-        const blogs = await getBlogsFromDb();
+        const blog = await getSingleBlogFromDb();
 
-        await api.delete(`/api/blogs/${blogs[0].id}`)
+        api.set(await authenticateTestUserById(blog.user.toString()));
+
+        await api.delete(`/api/blogs/${blog.id}`)
             .expect(204);
     });
 
     test('delete a non existing note', async () => {
-        await api.delete('/api/blogs/64d7795c921938dadba1b616')
+        // eslint-disable-next-line max-len
+        // TODO map all IDs? Generate list through ChatGpt en then check for one that is not in the other list
+        api.set(await authenticateTestUser());
+
+        await api.delete('/api/blogs/64c5197b18fedff391340b90')
             .expect(404);
     });
 
@@ -113,6 +125,19 @@ describe('test saved note manipulation', () => {
         blogs = await getBlogsFromDb();
         expect(blogs)
             .toContainEqual(toUpdateBlog);
+    });
+});
+
+describe('test as unauthorized', () => {
+    test('insert new blog', async () => {
+        await api.post('/api/blogs')
+            .send(singleBlog)
+            .expect(401);
+
+        const allBlogs = await getBlogsFromDb();
+
+        expect(allBlogs.length)
+            .toBe(listWithMultipleBlogs.length);
     });
 });
 

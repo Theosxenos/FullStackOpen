@@ -1,8 +1,7 @@
-// eslint-disable-next-line import/extensions
-import blogRepository from '../repositories/BlogRepositorySingleton.js';
-// eslint-disable-next-line import/extensions
 import BlogModel from '../models/BlogSchema.js';
 import UserModel from '../models/UserSchema.js';
+import blogRepository from '../repositories/BlogRepositorySingleton.js';
+import { initUserTestData } from './userApiTest_helper.js';
 
 const listWithMultipleBlogs = [
     {
@@ -74,22 +73,32 @@ const singleBlogNoUrlTitle = {
 };
 
 const getBlogsFromDb = async () => {
-    const blogs = await blogRepository.getAllBlogs();
-    return blogs.map((blog) => blog.toJSON());
+    const blogs = await BlogModel.find({});
+    return blogs.map((blog) => {
+        const blogObj = blog.toJSON();
+        blogObj.user = blogObj.user.toString();
+        return blogObj;
+    });
 };
 
-const initTestData = async () => {
+const getSingleBlogFromDb = async () => BlogModel.findOne({});
+
+const initBlogTestData = async () => {
+    await initUserTestData();
     await BlogModel.deleteMany({});
+    const dbUsers = await UserModel.find({});
 
-    const singleUser = await UserModel.findOne({});
-    const userId = singleUser.toJSON().id;
+    await listWithMultipleBlogs.reduce(async (prevPromise, blog) => {
+        await prevPromise; // wait for the previous promise to resolve
+        const rng = Math.floor(Math.random() * dbUsers.length);
 
-    await BlogModel.insertMany(listWithMultipleBlogs.map((blog) => {
-        return {
+        // eslint-disable-next-line no-await-in-loop
+        return blogRepository.addNewBlog({
             ...blog,
-            user: userId,
-        };
-    }));
+            // eslint-disable-next-line no-underscore-dangle
+            user: dbUsers[rng]._id.toString(),
+        });
+    }, Promise.resolve()); // start with a resolved promise
 };
 
 export {
@@ -100,5 +109,6 @@ export {
     singleBlogNoUrl,
     singleBlogNoUrlTitle,
     getBlogsFromDb,
-    initTestData,
+    getSingleBlogFromDb,
+    initBlogTestData,
 };
