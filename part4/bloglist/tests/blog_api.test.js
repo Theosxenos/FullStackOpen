@@ -12,7 +12,6 @@ import {
     singleBlogNoUrl,
     singleBlogNoUrlTitle,
 } from './blogApiTest_helper.js';
-import { listWithMultipleUsers } from './userApiTest_helper.js';
 import { authenticateTestUser, authenticateTestUserById } from './authApiTest_helper.js';
 
 const api = supertest(app);
@@ -46,14 +45,7 @@ describe('test saved blogs', () => {
 
 describe('test inserting new blogs', () => {
     beforeEach(async () => {
-        const {
-            username,
-            password,
-        } = listWithMultipleUsers[0];
-
-        const auth = await authenticateTestUser(username, password);
-
-        api.set('Authorization', `Bearer ${auth.token}`);
+        api.set(await authenticateTestUser());
     });
 
     test('test new blog creation', async () => {
@@ -105,8 +97,7 @@ describe('test saved note manipulation', () => {
     test('delete a note', async () => {
         const blog = await getSingleBlogFromDb();
 
-        const { token } = await authenticateTestUserById(blog.user.toString());
-        api.set('Authorization', `Bearer ${token}`);
+        api.set(await authenticateTestUserById(blog.user.toString()));
 
         await api.delete(`/api/blogs/${blog.id}`)
             .expect(204);
@@ -115,7 +106,9 @@ describe('test saved note manipulation', () => {
     test('delete a non existing note', async () => {
         // eslint-disable-next-line max-len
         // TODO map all IDs? Generate list through ChatGpt en then check for one that is not in the other list
-        await api.delete('/api/blogs/64d7795c921938dadba1b616')
+        api.set(await authenticateTestUser());
+
+        await api.delete('/api/blogs/64c5197b18fedff391340b90')
             .expect(404);
     });
 
@@ -132,6 +125,19 @@ describe('test saved note manipulation', () => {
         blogs = await getBlogsFromDb();
         expect(blogs)
             .toContainEqual(toUpdateBlog);
+    });
+});
+
+describe('test as unauthorized', () => {
+    test('insert new blog', async () => {
+        await api.post('/api/blogs')
+            .send(singleBlog)
+            .expect(401);
+
+        const allBlogs = await getBlogsFromDb();
+
+        expect(allBlogs.length)
+            .toBe(listWithMultipleBlogs.length);
     });
 });
 
