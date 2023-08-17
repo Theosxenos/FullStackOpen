@@ -8,27 +8,50 @@ const App = () => {
     const [blogs, setBlogs] = useState([])
     const [user, setUser] = useState()
 
+    const handleLogout = () => {
+        window.localStorage.clear();
+        setUser(undefined);
+    }
+
     const handleSubmit = async (event) => {
         event.preventDefault()
 
-        const {username, password} = event.target.elements
+        try {
+            const {username, password} = event.target.elements
 
-        const {data} = await LoginService.login({username: username.value, password: password.value});
-        setUser(data);
+            const {data} = await LoginService.login({username: username.value, password: password.value});
+            setUser(data);
+
+            window.localStorage.setItem('loggedUser', JSON.stringify(data));
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     useEffect(() => {
-        blogService.getAll().then(blogs => setBlogs(blogs))
-    }, [])
+        if (!user) return;
+
+        blogService.getAll().then(blogs => setBlogs(blogs));
+    }, [user]);
+
+    useEffect(() => {
+        const storedUser = window.localStorage.getItem('loggedUser');
+
+        if(storedUser) {
+            const userJson = JSON.parse(storedUser);
+            setUser(userJson);
+        }
+    }, []);
+
 
     return (
-        <>
+        <div>
             {!user && <LoginForm onFormSubmit={handleSubmit}/>}
             {user && <>
-                <p>Welcome {user.name}!</p>
+                <p>Welcome {user.name}! <button type="button" onClick={handleLogout}>logout</button></p>
                 <BlogList blogs={blogs}/>
             </>}
-        </>
+        </div>
     )
 }
 
