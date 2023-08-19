@@ -1,5 +1,6 @@
 const BlogForm = ({onBlogFormSubmit}) => {
     return <div>
+        <h2>create new</h2>
         <form onSubmit={onBlogFormSubmit}>
             <label>title</label><input type="text" id="title"/><br/>
             <label>author</label><input type="text" id="author"/><br/>
