@@ -15,7 +15,7 @@ import {
 // eslint-disable-next-line import/extensions
 import usersRouter from './controllers/usersRouter.js';
 // eslint-disable-next-line import/extensions
-import MONGODB_DB from './utils/config.js';
+import { MONGO_CONNECTION_URL } from './utils/config.js';
 import loginRouter from './controllers/loginRouter.js';
 import { tokenExtractor, userExtractor } from './utils/authMiddleware.js';
 import blogRepository from './repositories/BlogRepositorySingleton.js';
@@ -30,7 +30,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :r
 // app.use(morgan('tiny'));
 
 if (mongoose.connection.closed || mongoose.connection.closed === undefined) {
-    await mongoose.connect(`mongodb://localhost:27017/${MONGODB_DB}`);
+    await mongoose.connect(MONGO_CONNECTION_URL);
 }
 
 app.get('/api/blogs/', async (request, response) => {

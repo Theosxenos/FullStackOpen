@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import userRepository from '../repositories/userRepositorySingleton.js';
+import userRepository from '../repositories/UserRepositorySingleton.js';
 
 class AuthService {
     static async login(username, password) {

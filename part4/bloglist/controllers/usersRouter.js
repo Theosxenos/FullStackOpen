@@ -1,6 +1,6 @@
 import { Router } from 'express';
 // eslint-disable-next-line import/extensions
-import userRepository from '../repositories/userRepositorySingleton.js';
+import userRepository from '../repositories/UserRepositorySingleton.js';
 import { tokenExtractor, userExtractor } from '../utils/authMiddleware.js';
 
 const usersRouter = new Router();

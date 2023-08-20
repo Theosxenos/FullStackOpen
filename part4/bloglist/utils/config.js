@@ -1,7 +1,9 @@
 import 'dotenv/config';
 
-const { NODE_ENV, MONGODB_DB_TEST, MONGODB_DB_PROD } = process.env;
+const { NODE_ENV, MONGODB_DB_TEST, MONGODB_DB_PROD, MONGO_CONNECTION } = process.env;
 
 const MONGODB_DB = NODE_ENV === 'test' ? MONGODB_DB_TEST : MONGODB_DB_PROD;
 
-export default MONGODB_DB;
+const MONGO_CONNECTION_URL = `${MONGO_CONNECTION}${MONGODB_DB}`;
+
+export { MONGODB_DB, MONGO_CONNECTION_URL };
