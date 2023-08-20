@@ -6,6 +6,7 @@ import BlogList from "./components/BlogList";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import NOTIFICATION_TYPES from "./utils/constants";
+import Toggleable from "./components/Toggleable";
 
 const App = () => {
     const [blogs, setBlogs] = useState([])
@@ -27,22 +28,11 @@ const App = () => {
         setTimeout(() => setNotificationData(undefined), 5_000);
     }
 
-    const handleBlogFormSubmit = async (event) => {
-        event.preventDefault()
-
+    const handleBlogFormSubmit = async (blog) => {
         try {
-            const {title, author, url} = event.target.elements
-
-            const newBlog = {
-                title: title.value,
-                author: author.value,
-                url: url.value
-            }
-
-            const blog = await blogService.addNewBlog(newBlog);
-            setBlogs([...blogs, blog]);
-            showNotification(`new blog ${blog.name} by ${blog.author} added`, NOTIFICATION_TYPES.SUCCESS);
-
+            const newBlog = await blogService.addNewBlog(blog);
+            setBlogs([...blogs, newBlog]);
+            showNotification(`new blog ${newBlog.title} by ${newBlog.author} added`, NOTIFICATION_TYPES.SUCCESS);
         } catch (error) {
             console.error(error);
             showNotification(error.message, NOTIFICATION_TYPES.DANGER);
@@ -89,7 +79,9 @@ const App = () => {
             {!user && <LoginForm onLogin={handleLogin}/>}
             {user && <>
                 <p>Welcome {user.name}! <button type="button" onClick={handleLogout}>logout</button></p>
-                <BlogForm onBlogFormSubmit={handleBlogFormSubmit} />
+                <Toggleable buttonLabel="new note">
+                    <BlogForm onBlogFormSubmit={handleBlogFormSubmit} />
+                </Toggleable>
                 <BlogList blogs={blogs}/>
             </>}
         </div>
