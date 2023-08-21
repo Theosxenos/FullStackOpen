@@ -32,9 +32,21 @@ const App = () => {
     const handleBlogFormSubmit = async (blog) => {
         try {
             const newBlog = await blogService.addNewBlog(blog);
+            newBlog.user = {name: user.name};
             setBlogs([...blogs, newBlog]);
             showNotification(`new blog ${newBlog.title} by ${newBlog.author} added`, NOTIFICATION_TYPES.SUCCESS);
             blogForm.current.toggleVisibility();
+        } catch (error) {
+            console.error(error);
+            showNotification(error.message, NOTIFICATION_TYPES.DANGER);
+        }
+    }
+
+    const handleBlogUpdate = async (blog) => {
+        try {
+            await blogService.updateBlog(blog.id, blog);
+            setBlogs(await blogService.getAll());
+            showNotification(`blog ${blog.name} by ${blog.author} liked`, NOTIFICATION_TYPES.SUCCESS);
         } catch (error) {
             console.error(error);
             showNotification(error.message, NOTIFICATION_TYPES.DANGER);
@@ -50,7 +62,7 @@ const App = () => {
             blogService.setToken(data.token);
         } catch (error) {
             console.error(error);
-            if(error.response && error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
                 showNotification('invalid username or password', NOTIFICATION_TYPES.DANGER);
             }
         }
@@ -67,7 +79,7 @@ const App = () => {
     useEffect(() => {
         const storedUser = window.localStorage.getItem('loggedUser');
 
-        if(storedUser && !user) {
+        if (storedUser && !user) {
             const userJson = JSON.parse(storedUser);
             setUser(userJson);
             blogService.setToken(userJson.token);
@@ -77,14 +89,14 @@ const App = () => {
     return (
         <div>
             <h1>blogapp</h1>
-            {notificationData && <Notification notificationData={notificationData} />}
+            {notificationData && <Notification notificationData={notificationData}/>}
             {!user && <LoginForm onLogin={handleLogin}/>}
             {user && <>
                 <p>Welcome {user.name}! <button type="button" onClick={handleLogout}>logout</button></p>
                 <Toggleable buttonLabel="new note" ref={blogForm}>
-                    <BlogForm onBlogFormSubmit={handleBlogFormSubmit} />
+                    <BlogForm onBlogFormSubmit={handleBlogFormSubmit}/>
                 </Toggleable>
-                <BlogList blogs={blogs}/>
+                <BlogList blogs={blogs} onBlogUpdate={handleBlogUpdate}/>
             </>}
         </div>
     )
