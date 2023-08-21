@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useRef} from 'react'
 import blogService from './services/blogs'
 import loginService from "./services/login";
 import LoginForm from "./components/LoginForm";
@@ -12,6 +12,7 @@ const App = () => {
     const [blogs, setBlogs] = useState([])
     const [user, setUser] = useState()
     const [notificationData, setNotificationData] = useState();
+    const blogForm = useRef();
 
     const handleLogout = () => {
         window.localStorage.clear();
@@ -33,6 +34,7 @@ const App = () => {
             const newBlog = await blogService.addNewBlog(blog);
             setBlogs([...blogs, newBlog]);
             showNotification(`new blog ${newBlog.title} by ${newBlog.author} added`, NOTIFICATION_TYPES.SUCCESS);
+            blogForm.current.toggleVisibility();
         } catch (error) {
             console.error(error);
             showNotification(error.message, NOTIFICATION_TYPES.DANGER);
@@ -79,7 +81,7 @@ const App = () => {
             {!user && <LoginForm onLogin={handleLogin}/>}
             {user && <>
                 <p>Welcome {user.name}! <button type="button" onClick={handleLogout}>logout</button></p>
-                <Toggleable buttonLabel="new note">
+                <Toggleable buttonLabel="new note" ref={blogForm}>
                     <BlogForm onBlogFormSubmit={handleBlogFormSubmit} />
                 </Toggleable>
                 <BlogList blogs={blogs}/>
