@@ -27,7 +27,7 @@ const getAllSorted = async () => {
     //
     //     return 0;
     // });
-    
+
     // Reverse for ascending
     return blogs.sort((blogA, blogB) => blogB.likes - blogA.likes);
 }
@@ -51,5 +51,13 @@ const updateBlog = async (id, blog) => {
   return response.data;
 }
 
+const deleteBlog = async (id) => {
+  const config = {
+    headers: {Authorization: token},
+  }
+
+  await axios.delete(`${baseUrl}/${id}`, config);
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { setToken, getAll, getAllSorted, addNewBlog, updateBlog }
+export default { setToken, getAll, getAllSorted, addNewBlog, updateBlog, deleteBlog }

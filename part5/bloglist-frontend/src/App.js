@@ -32,10 +32,23 @@ const App = () => {
     const handleBlogFormSubmit = async (blog) => {
         try {
             const newBlog = await blogService.addNewBlog(blog);
-            newBlog.user = {name: user.name};
-            setBlogs([...blogs, newBlog]);
+            setBlogs(await blogService.getAllSorted());
             showNotification(`new blog ${newBlog.title} by ${newBlog.author} added`, NOTIFICATION_TYPES.SUCCESS);
             blogForm.current.toggleVisibility();
+        } catch (error) {
+            console.error(error);
+            showNotification(error.message, NOTIFICATION_TYPES.DANGER);
+        }
+    }
+
+    const handleBlogDelete = async (blog) => {
+        try {
+            const remove = window.confirm(`Remove blog ${blog.title} by ${blog.author}?`);
+
+            if(remove) {
+                await blogService.deleteBlog(blog.id);
+                setBlogs(await blogService.getAllSorted());
+            }
         } catch (error) {
             console.error(error);
             showNotification(error.message, NOTIFICATION_TYPES.DANGER);
@@ -96,7 +109,8 @@ const App = () => {
                 <Toggleable buttonLabel="new note" ref={blogForm}>
                     <BlogForm onBlogFormSubmit={handleBlogFormSubmit}/>
                 </Toggleable>
-                <BlogList blogs={blogs} onBlogUpdate={handleBlogUpdate}/>
+                <BlogList blogs={blogs} onBlogUpdate={handleBlogUpdate} username={user.username}
+                          onBlogDelete={handleBlogDelete}/>
             </>}
         </div>
     )
