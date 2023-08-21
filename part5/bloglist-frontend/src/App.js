@@ -45,8 +45,8 @@ const App = () => {
     const handleBlogUpdate = async (blog) => {
         try {
             await blogService.updateBlog(blog.id, blog);
-            setBlogs(await blogService.getAll());
-            showNotification(`blog ${blog.name} by ${blog.author} liked`, NOTIFICATION_TYPES.SUCCESS);
+            setBlogs(await blogService.getAllSorted());
+            showNotification(`blog ${blog.title} by ${blog.author} liked`, NOTIFICATION_TYPES.SUCCESS);
         } catch (error) {
             console.error(error);
             showNotification(error.message, NOTIFICATION_TYPES.DANGER);
@@ -72,7 +72,7 @@ const App = () => {
         if (!user) return;
 
         (async () => {
-            setBlogs(await blogService.getAll());
+            setBlogs(await blogService.getAllSorted());
         })();
     }, [user]);
 
