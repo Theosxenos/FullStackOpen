@@ -1,7 +1,5 @@
-import axios from "axios";
+import axios from 'axios';
 
-const login = async (credentials) => {
-    return axios.post('/api/login', credentials);
-}
+const login = async (credentials) => axios.post('/api/login', credentials);
 
-export default { login }
+export default { login };
